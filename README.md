@@ -14,4 +14,4 @@ optimizer.step()
 
 ## Noted
 
-Parameters are shared if there are multiple optimizers so Lookahead class does not implement Optimizer Class. Other optimizer usages can be added.
+Parameters are shared if there are multiple optimizers in one network, so Lookahead class does not implement Optimizer Class. Other optimizer usages can be added.
