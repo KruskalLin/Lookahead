@@ -23,7 +23,7 @@ testloader = torch.utils.data.DataLoader(testset, batch_size=16, shuffle=False, 
 net = SimpleCNN()
 net.to(device)
 criterion = nn.CrossEntropyLoss()
-optimizer = Lookahead(optim.Adam(net.parameters(), lr=0.001))
+optimizer = Lookahead(optim.Adam(net.parameters(), lr=0.001), k=5, alpha=0.5)
 
 for epoch in range(EPOCHS):
     bar = tqdm(trainloader)
