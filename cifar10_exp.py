@@ -5,7 +5,7 @@ from tqdm import tqdm
 import torch.optim as optim
 import torch.nn as nn
 from simple_cnn import SimpleCNN
-from sgd import Lookahead
+from optim_lookahead import Lookahead
 
 ROOT_DIR = './data'
 EPOCHS = 10
@@ -14,8 +14,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-trainset = torchvision.datasets.CIFAR10(root=ROOT_DIR, train=True, download=True, transform=transform)
-testset = torchvision.datasets.CIFAR10(root=ROOT_DIR, train=False, download=True, transform=transform)
+trainset = torchvision.datasets.CIFAR10(root=ROOT_DIR, train=True, download=False, transform=transform)
+testset = torchvision.datasets.CIFAR10(root=ROOT_DIR, train=False, download=False, transform=transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=128, shuffle=True, num_workers=4)
 testloader = torch.utils.data.DataLoader(testset, batch_size=16, shuffle=False, num_workers=4)
 
@@ -23,7 +23,7 @@ testloader = torch.utils.data.DataLoader(testset, batch_size=16, shuffle=False, 
 net = SimpleCNN()
 net.to(device)
 criterion = nn.CrossEntropyLoss()
-optimizer = Lookahead(net.parameters(), lr=0.001, k=5, alpha=0.8)
+optimizer = Lookahead(optim.Adam(net.parameters(), lr=0.001))
 
 for epoch in range(EPOCHS):
     bar = tqdm(trainloader)
@@ -34,7 +34,7 @@ for epoch in range(EPOCHS):
         outputs = net(inputs)
         loss = criterion(outputs, labels)
         loss.backward()
-        optimizer.update()
+        optimizer.step()
         bar.set_description('Epoch %d: loss %.4f' % (epoch + 1, loss.item()))
 
 print('Finished Training')
